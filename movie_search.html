@@ -1,0 +1,59 @@
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+  <script src="http://fgnass.github.io/spin.js/spin.js"></script>
+  <script src="js/modernizr.js"></script>
+  <link rel="stylesheet" type="text/css" href="movie_search.css">
+  <!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+</head>
+<script type='text/javascript'>
+
+function Empty(element){
+	var spinner = new Spinner().spin();
+	$('#spinner').append(spinner.el);
+	$("#spinner").show();
+  if(element.value.trim()== ""){
+    alert("Enter a Movie Name");
+    element.focus();
+  }
+  else {
+    $("#content").empty();
+  	// alert("Successful")
+  	var apikey = "jqqvetwpc9xd7xhsqar7qsmm";
+		var baseUrl = "http://api.rottentomatoes.com/api/public/v1.0";
+		var moviesSearchUrl = baseUrl + '/movies.json?apikey=' + apikey;
+  	$(document).ready(function() {
+  		$.ajax({
+  			url: moviesSearchUrl + '&q=' + encodeURI(element.value),
+  			dataType: "jsonp",
+  			success: searchCallback
+  		});
+  	});
+  	function searchCallback(data) {
+  		$(document.body).append('Found' + data.total + 'result for' + element.value);
+  		var movies = data.movies;
+  		$.each(movies, function(index, movie) {
+  			$("#content").append('<h2>' + movie.title + '</h2>');
+        $("#content").append('<img src="' + movie.posters.thumbnail+ '"/>');
+        $("#content").append("<article>" + movie.critics_consensus + "</article>");
+        $("#content").append("<span>" + movie.year + "</span>");
+  		});
+  		$("#spinner").hide();
+  	}
+	}	
+}
+</script>
+
+<html>
+	<body>
+		<form align = "center">
+		<h2>Enter a movie name</h2> <input type='text' id='txtBox'/>
+		<input type='button' class = "text_box"
+		    onclick="Empty(document.getElementById('txtBox'))"
+		    value='Search'/>
+		</form>
+		<div id = "spinner" align = "center" style ="display:none; padding:30px;">
+		</div>
+    <div id = "content">
+    </div>
+	</body>
+</html>
